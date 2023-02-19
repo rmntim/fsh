@@ -1,20 +1,8 @@
 import os
 import sys
-import socket
-from core.utils import print_err
+from core.utils import print_err, ANSI_COLORS, HOSTNAME, USERNAME
 from core.command_parser import parse_commands
 from core.fsh_builtins import change_directory, exec_command
-
-USERNAME: str = os.getlogin()
-HOSTNAME: str = socket.gethostname()
-
-
-ANSI_COLORS: dict[str, str] = {
-    "RESET": "\033[0;0m",
-    "RED": "\033[31m",
-    "GREEN": "\033[32m",
-    "YELLOW": "\033[33m",
-}
 
 
 def run_command(args: list[str]) -> int:
