@@ -31,7 +31,8 @@ def main() -> None:
         try:
             sys.stdout.write(f"{generate_prompt(exit_status)}")
             sys.stdout.flush()
-            commands = parse_commands()
+            command_str = sys.stdin.readline()
+            commands = parse_commands(command_str)
             if len(commands) == 0:
                 sys.stdout.write("\n")
             for command in commands:
