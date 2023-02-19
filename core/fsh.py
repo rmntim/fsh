@@ -32,7 +32,7 @@ def generate_prompt(exit_status: int) -> str:
     if exit_status == 0:
         return f"[{USERNAME}@{HOSTNAME} {curr_dir}]$ "
     else:
-        return f"[{USERNAME}@{HOSTNAME} {curr_dir}]{ANSI_COLORS['RED']}${ANSI_COLORS['RESET']} "
+        return f"[{USERNAME}@{HOSTNAME} {curr_dir}]{ANSI_COLORS['RED']}${ANSI_COLORS['RESET']} "  # noqa E501
 
 
 def main() -> None:
