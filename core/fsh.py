@@ -44,7 +44,7 @@ def read_line() -> str:
     line: str = sys.stdin.readline()
     if len(line) < 1 or len(line) == 1 and line[0] == "\n":
         return line
-    while str.encode(line)[-2] == 92:
+    while str.encode(line.strip())[-1] == 92 or line.strip()[-2:] in ["&&", "||"]:
         sys.stdout.write("... > ")
         sys.stdout.flush()
         result += line.replace("\\", "").strip()
