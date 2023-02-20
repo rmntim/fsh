@@ -20,8 +20,13 @@ def run_command(args: list[str]) -> int:
         case _:
             pid: int = os.fork()
             if pid == 0:
-                os.execvp(command, args)
-            _, exit_status = os.waitpid(pid, 0)
+                try:
+                    os.execvp(command, args)
+                except FileNotFoundError:
+                    print_err("File not found")
+                    sys.exit(1)
+            else:
+                _, exit_status = os.waitpid(pid, 0)
     return exit_status
 
 
@@ -42,12 +47,12 @@ def main() -> None:
         try:
             sys.stdout.write(f"{generate_prompt(exit_status)}")
             sys.stdout.flush()
-            command_str = sys.stdin.readline()
-            commands = parse_commands(command_str)
+            command_str: str = sys.stdin.readline()
+            commands: list[str] = parse_commands(command_str)
             if len(commands) == 0:
                 match str.encode(command_str):
                     case b"":
-                        print("exit")
+                        print("\nexit")
                         sys.exit()
                     case b"\n":
                         continue
@@ -68,9 +73,6 @@ def main() -> None:
                     case cmd:
                         args = cmd.split()
                         exit_status = run_command(args)
-        except FileNotFoundError:
-            print_err("No such file or directory")
-            exit_status = 1
         except KeyboardInterrupt:
             sys.stdout.write("\n")
 
