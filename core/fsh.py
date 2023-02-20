@@ -34,7 +34,12 @@ def main() -> None:
             command_str = sys.stdin.readline()
             commands = parse_commands(command_str)
             if len(commands) == 0:
-                sys.stdout.write("\n")
+                match str.encode(command_str):
+                    case b"":
+                        print("exit")
+                        sys.exit()
+                    case b"\n":
+                        continue
             for command in commands:
                 match command:
                     case ";":
