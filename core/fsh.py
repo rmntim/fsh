@@ -39,6 +39,21 @@ def generate_prompt(exit_status: int) -> str:
         return f"[{USERNAME}@{HOSTNAME} {curr_dir}]{ANSI_COLORS['RED']}${ANSI_COLORS['RESET']} "  # noqa E501
 
 
+def read_line() -> str:
+    result: str = ""
+    line: str = sys.stdin.readline()
+    if len(line) < 1 or len(line) == 1 and line[0] == "\n":
+        return line
+    while str.encode(line)[-2] == 92:
+        sys.stdout.write("... > ")
+        sys.stdout.flush()
+        result += line.replace("\\", "").strip()
+        line = sys.stdin.readline()
+
+    result += " " + line
+    return result
+
+
 def main() -> None:
 
     exit_status = 0
@@ -47,7 +62,8 @@ def main() -> None:
         try:
             sys.stdout.write(f"{generate_prompt(exit_status)}")
             sys.stdout.flush()
-            command_str: str = sys.stdin.readline()
+            command_str = read_line()
+
             commands: list[str] = parse_commands(command_str)
             if len(commands) == 0:
                 match str.encode(command_str):
