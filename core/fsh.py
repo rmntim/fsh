@@ -103,23 +103,6 @@ def main() -> None:
                     case b"\n":
                         continue
             exit_status = launch_commands(command_tokens)
-            # for command in command_tokens:
-            #     match command:
-            #         case ";":
-            #             continue
-            #         case "&&":
-            #             if exit_status == 0:
-            #                 continue
-            #             else:
-            #                 break
-            #         case "||":
-            #             if exit_status != 0:
-            #                 continue
-            #             else:
-            #                 break
-            #         case cmd:
-            #             args = cmd.split()
-            #             exit_status = run_command(args)
         except KeyboardInterrupt:
             sys.stdout.write("\n")
 
