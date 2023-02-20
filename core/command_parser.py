@@ -1,7 +1,7 @@
 __all__ = ["parse_commands"]
 
 
-def parse_commands(command_str: str) -> list[str]:
+def parse_commands(command_str: str) -> list[list[str] | str]:
     commands = (
         command_str.strip()
         .replace(";", " ; ")
@@ -13,10 +13,10 @@ def parse_commands(command_str: str) -> list[str]:
         .split()
     )
 
-    tokens = []
-    subshell = []
-    in_subshell = False
-    s = ""
+    tokens: list[list[str] | str] = []
+    subshell: list[str] = []
+    in_subshell: bool = False
+    s: str = ""
 
     for i, cmd in enumerate(commands):
         if cmd not in [";", "&&", "||", ")", "("]:

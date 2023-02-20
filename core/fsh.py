@@ -1,8 +1,9 @@
 import os
 import sys
-from core.utils import print_err, ANSI_COLORS, HOSTNAME, USERNAME
+
 from core.command_parser import parse_commands
 from core.fsh_builtins import change_directory, exec_command
+from core.utils import ANSI_COLORS, HOSTNAME, USERNAME, print_err
 
 
 def run_command(args: list[str]) -> int:
@@ -54,8 +55,37 @@ def read_line() -> str:
     return result
 
 
-def main() -> None:
+def handle_subshell(args: list[str]) -> int:
+    # TODO Handle subshells
+    ...
 
+
+def launch_commands(tokens: list[str] | list[list[str] | str]) -> int:
+    exit_status: int = 0
+    for token in tokens:
+        if type(token) is list:
+            exit_status = handle_subshell(token)
+        elif type(token) is str:
+            match token:
+                case ";":
+                    continue
+                case "&&":
+                    if exit_status == 0:
+                        continue
+                    else:
+                        break
+                case "||":
+                    if exit_status != 0:
+                        continue
+                    else:
+                        break
+                case cmd:
+                    args = cmd.split()
+                    exit_status = run_command(args)
+    return exit_status
+
+
+def main() -> None:
     exit_status = 0
 
     while True:
@@ -64,31 +94,32 @@ def main() -> None:
             sys.stdout.flush()
             command_str = read_line()
 
-            commands: list[str] = parse_commands(command_str)
-            if len(commands) == 0:
+            command_tokens: list[list[str] | str] = parse_commands(command_str)
+            if len(command_tokens) == 0:
                 match str.encode(command_str):
                     case b"":
                         print("\nexit")
                         sys.exit()
                     case b"\n":
                         continue
-            for command in commands:
-                match command:
-                    case ";":
-                        continue
-                    case "&&":
-                        if exit_status == 0:
-                            continue
-                        else:
-                            break
-                    case "||":
-                        if exit_status != 0:
-                            continue
-                        else:
-                            break
-                    case cmd:
-                        args = cmd.split()
-                        exit_status = run_command(args)
+            exit_status = launch_commands(command_tokens)
+            # for command in command_tokens:
+            #     match command:
+            #         case ";":
+            #             continue
+            #         case "&&":
+            #             if exit_status == 0:
+            #                 continue
+            #             else:
+            #                 break
+            #         case "||":
+            #             if exit_status != 0:
+            #                 continue
+            #             else:
+            #                 break
+            #         case cmd:
+            #             args = cmd.split()
+            #             exit_status = run_command(args)
         except KeyboardInterrupt:
             sys.stdout.write("\n")
 
