@@ -7,6 +7,7 @@ def parse_commands(command_str: str) -> list[str]:
         .replace(";", " ; ")
         .replace("&&", " && ")
         .replace("||", " || ")
+        .replace("\\", "")
         .split()
     )
 
@@ -23,3 +24,25 @@ def parse_commands(command_str: str) -> list[str]:
             s = ""
 
     return tokens
+
+
+def run_tests():
+    # Single command
+    assert parse_commands("ls") == ["ls"]
+
+    # Single command with arguments
+    assert parse_commands("cal -m") == ["cal -m"]
+
+    # Multiple operators
+    assert parse_commands("pwd&&ls; date") == ["pwd", "&&", "ls", ";", "date"]
+
+    # Backslash continuation
+    assert parse_commands("ls \\-la") == ["ls -la"]
+
+    # Bad backslash usage
+    assert parse_commands("cal\\-m") == ["cal-m"]
+
+
+if __name__ == "__main__":
+    run_tests()
+    print("All test passed!")
