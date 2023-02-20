@@ -6,7 +6,7 @@ __all__ = ["change_directory", "exec_command"]
 
 
 def exec_command(args: list[str]) -> None:
-    os.execvp(args[1], args[1:])
+    os.execvp(args[0], args)
 
 
 def change_directory(args: list[str]) -> int:

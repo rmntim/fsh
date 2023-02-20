@@ -6,11 +6,22 @@ from core.fsh_builtins import change_directory, exec_command
 
 
 def run_command(args: list[str]) -> int:
-    command: str = args[1] if args[0] == "!" else args[0]
-    pid: int = os.fork()
-    if pid == 0:
-        os.execvp(command, args)
-    _, exit_status = os.waitpid(pid, 0)
+    command: str = args[0]
+    exit_status: int = 0
+    match command:
+        case "exit":
+            sys.exit()
+        case "exec":
+            exec_command(args[1:])
+        case "cd":
+            exit_status = change_directory(args)
+        case "!":
+            exit_status = int(not run_command(args[1:]))
+        case _:
+            pid: int = os.fork()
+            if pid == 0:
+                os.execvp(command, args)
+            _, exit_status = os.waitpid(pid, 0)
     return exit_status
 
 
@@ -56,23 +67,12 @@ def main() -> None:
                             break
                     case cmd:
                         args = cmd.split()
-                        match args[0]:
-                            case "exit":
-                                sys.exit()
-                            case "exec":
-                                exec_command(args)
-                            case "cd":
-                                exit_status = change_directory(args)
-                            case "!":
-                                exit_status = int(not run_command(args))
-                            case _:
-                                exit_status = run_command(args)
+                        exit_status = run_command(args)
         except FileNotFoundError:
             print_err("No such file or directory")
             exit_status = 1
         except KeyboardInterrupt:
             sys.stdout.write("\n")
-            continue
 
 
 if __name__ == "__main__":
